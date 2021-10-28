@@ -16,8 +16,8 @@ struct KeyConstant {
         static let baseUrl = "https://api.openweathermap.org/data/2.5/"
         static let productionUrl = ""
         
-        static func forcastAPI(_ city: String)-> String {
-            return "\(API.baseUrl)forecast?q=\(city)&appid=\(ApplicationKeys.openWeatherAPIKey.rawValue)"
+        static func forcastAPI(_ lat: Double, long: Double, count: Int)-> String {
+            return "\(API.baseUrl)onecall?lat=\(lat)&lon=\(long)&&cnt=\(count)&appid=\(ApplicationKeys.openWeatherAPIKey.rawValue)&units=imperial"
         }
     }
 }

@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import JGProgressHUD
 
 class WeatherVC: UIViewController {
     ///@IBOutlet
@@ -15,6 +16,7 @@ class WeatherVC: UIViewController {
     @IBOutlet weak var lineChartView: LineChart!
     ///Varriable
     private let viewModel = WeatherViewModel()
+    private let hud = JGProgressHUD()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -25,12 +27,24 @@ class WeatherVC: UIViewController {
     }
 
     private func getData() {
+        hud.textLabel.text = "Loading"
+        hud.show(in: self.view)
+
         viewModel.fetchForcastAPI {
+            DispatchQueue.main.async {
+                self.hud.dismiss()
+            }
             self.viewModel.hourlyArray = self.viewModel.getHourlyData()
             self.setupCollectioView()
             self.setUpChart()
         } failure: { error in
             print(error)
+            DispatchQueue.main.async {
+                self.hud.dismiss()
+                let alert = UIAlertController(title: "Weather App", message: "Something went wrong", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "Okay", style: .cancel, handler: nil))
+                self.present(alert, animated: true, completion: nil)
+            }
         }
     }
     

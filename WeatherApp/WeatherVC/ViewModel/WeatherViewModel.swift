@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import CoreLocation
 
 class WeatherViewModel {
     
@@ -14,18 +15,21 @@ class WeatherViewModel {
     var selectedIndex = 0
 
     func fetchForcastAPI(completionHandler: @escaping () -> Void, failure: @escaping (String) -> Void) {
-        let forcastURL = "https://api.openweathermap.org/data/2.5/onecall?lat=56.1304&lon=106.3468&&cnt=5&appid=e825bcc98636f9393fa92415d9baadb2&units=imperial"
+        
+        let forcastURL = KeyConstant.API.forcastAPI(56.1304, long: 106.3468, count: 5)
+
         var request = URLRequest(url: URL(string: forcastURL)!)
         request.httpMethod = "GET"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
 
         let session = URLSession.shared
         let task = session.dataTask(with: request, completionHandler: { jsonData, response, error -> Void in
+            
             do {
                 if let resultData = jsonData {
-                    let weatherModel = try! JSONDecoder().decode(WeatherModel.self, from: resultData)
+                    let weatherModel = try? JSONDecoder().decode(WeatherModel.self, from: resultData)
                     self.weatherModel = weatherModel
-                    print(weatherModel)
+                    print(self.weatherModel)
                     completionHandler()
                 } else {
                     failure("Data Not Received")
