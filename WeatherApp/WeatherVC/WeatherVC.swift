@@ -89,29 +89,10 @@ extension WeatherVC: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "WeatherCollectionViewCell", for: indexPath) as! WeatherCollectionViewCell
         if collectionView == hourlyCollectionView {
-            let model = viewModel.hourlyArray[indexPath.row]
-            let weatherType = model.weather.first?.main ?? ""
-            let hour = viewModel.getHourlyDate(model.dt)
-            
-            if hour == 0 {
-                cell.dayLabel.text = "Current"
-            } else {
-                cell.dayLabel.text = "\(hour)h"
-            }
-            cell.forcastImageView.image = UIImage.init(named: weatherType)
-            cell.tempratureCLabel.text = "\(Int((model.temp)))°"
-            cell.tempratureFLabel.text = "\(Int((model.dewPoint)))°"
+            hourlyCell(cell, indexPath: indexPath)
+        } else {
+            dailyCell(cell, indexPath: indexPath)
         }
-        else {
-            let model = viewModel.weatherModel?.daily?[indexPath.row]
-            let weatherType = model?.weather?.first?.main ?? ""
-            
-            cell.dayLabel.text = viewModel.getDate(model?.dt ?? 0)
-            cell.forcastImageView.image = UIImage.init(named: weatherType)
-            cell.tempratureCLabel.text = "\(Int((model?.temp.min ?? 0.00)))°"
-            cell.tempratureFLabel.text = "\(Int((model?.temp.max ?? 0.00)))°"
-        }
-
         DispatchQueue.main.async {
             if self.viewModel.selectedIndex == indexPath.row && collectionView == self.collectionView {
                 cell.viewContent?.backgroundColor = .lightGray.withAlphaComponent(0.1)
@@ -124,6 +105,31 @@ extension WeatherVC: UICollectionViewDataSource {
             }
         }
         return cell
+    }
+    
+    func dailyCell(_ cell: WeatherCollectionViewCell, indexPath: IndexPath) {
+        let model = viewModel.weatherModel?.daily?[indexPath.row]
+        let weatherType = model?.weather?.first?.main ?? ""
+        
+        cell.dayLabel.text = viewModel.getDate(model?.dt ?? 0)
+        cell.forcastImageView.image = UIImage.init(named: weatherType)
+        cell.tempratureCLabel.text = "\(Int((model?.temp.min ?? 0.00)))°"
+        cell.tempratureFLabel.text = "\(Int((model?.temp.max ?? 0.00)))°"
+    }
+    
+    func hourlyCell(_ cell: WeatherCollectionViewCell, indexPath: IndexPath) {
+        let model = viewModel.hourlyArray[indexPath.row]
+        let weatherType = model.weather.first?.main ?? ""
+        let hour = viewModel.getHourlyDate(model.dt)
+        
+        if hour == 0 {
+            cell.dayLabel.text = "Current"
+        } else {
+            cell.dayLabel.text = "\(hour)h"
+        }
+        cell.forcastImageView.image = UIImage.init(named: weatherType)
+        cell.tempratureCLabel.text = "\(Int((model.temp)))°"
+        cell.tempratureFLabel.text = "\(Int((model.dewPoint)))°"
     }
 }
 
