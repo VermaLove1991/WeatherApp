@@ -81,7 +81,7 @@ extension WeatherVC: UICollectionViewDataSource {
             let count = viewModel.hourlyArray.count
             return count
         } else {
-            let count = viewModel.weatherModel?.daily.count ?? 0
+            let count = viewModel.weatherModel?.daily?.count ?? 0
             return (count > 5) ? 5 : count
         }
     }
@@ -90,7 +90,7 @@ extension WeatherVC: UICollectionViewDataSource {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "WeatherCollectionViewCell", for: indexPath) as! WeatherCollectionViewCell
         if collectionView == hourlyCollectionView {
             let model = viewModel.hourlyArray[indexPath.row]
-            let weatherType = model.weather.first?.main.rawValue ?? ""
+            let weatherType = model.weather.first?.main ?? ""
             let hour = viewModel.getHourlyDate(model.dt)
             
             if hour == 0 {
@@ -103,8 +103,8 @@ extension WeatherVC: UICollectionViewDataSource {
             cell.tempratureFLabel.text = "\(Int((model.dewPoint)))°"
         }
         else {
-            let model = viewModel.weatherModel?.daily[indexPath.row]
-            let weatherType = model?.weather.first?.main.rawValue ?? ""
+            let model = viewModel.weatherModel?.daily?[indexPath.row]
+            let weatherType = model?.weather?.first?.main ?? ""
             
             cell.dayLabel.text = viewModel.getDate(model?.dt ?? 0)
             cell.forcastImageView.image = UIImage.init(named: weatherType)

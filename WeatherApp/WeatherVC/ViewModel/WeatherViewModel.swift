@@ -15,8 +15,10 @@ class WeatherViewModel {
     var selectedIndex = 0
 
     func fetchForcastAPI(completionHandler: @escaping () -> Void, failure: @escaping (String) -> Void) {
-        
-        let forcastURL = KeyConstant.API.forcastAPI(56.1304, long: 106.3468, count: 5)
+        let locationManager = CLLocationManager()
+        let lat: Double = locationManager.location?.coordinate.latitude ?? 56.1304
+        let long: Double = locationManager.location?.coordinate.longitude ?? 106.3468
+        let forcastURL = KeyConstant.API.forcastAPI(lat, long: long, count: 5)
 
         var request = URLRequest(url: URL(string: forcastURL)!)
         request.httpMethod = "GET"
@@ -27,7 +29,7 @@ class WeatherViewModel {
             
             do {
                 if let resultData = jsonData {
-                    let weatherModel = try? JSONDecoder().decode(WeatherModel.self, from: resultData)
+                    let weatherModel = try! JSONDecoder().decode(WeatherModel.self, from: resultData)
                     self.weatherModel = weatherModel
                     print(self.weatherModel)
                     completionHandler()
@@ -44,11 +46,11 @@ class WeatherViewModel {
     
     func generateRandomEntries() -> [PointEntry] {
         var result: [PointEntry] = []
-        var count = self.weatherModel?.daily.count ?? 0
+        var count = self.weatherModel?.daily?.count ?? 0
         count = (count > 5) ? 5 : count
 
         for i in 0..<count {
-            if let model = self.weatherModel?.daily[i] {
+            if let model = self.weatherModel?.daily?[i] {
                 let date = Date(timeIntervalSince1970: TimeInterval(model.dt))
                 let calenderDate = Calendar.current.dateComponents([.day], from: date)
                 result.append(PointEntry.init(value: Int(model.temp.day), label: calenderDate.day!.description))
@@ -58,7 +60,7 @@ class WeatherViewModel {
     }
     
     func getHourlyData()-> [Current] {
-        let dailyTimeStamp = self.weatherModel?.daily[selectedIndex].dt
+        let dailyTimeStamp = self.weatherModel?.daily?[selectedIndex].dt
         let date = Date(timeIntervalSince1970: TimeInterval(dailyTimeStamp ?? 0))
         let dailycalenderDate = Calendar.current.dateComponents([.day, .month], from: date)
 

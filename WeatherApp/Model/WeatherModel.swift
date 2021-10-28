@@ -8,13 +8,22 @@
 import Foundation
 
 // MARK: - WeatherModel
+
+enum MainEnum: String, Codable {
+    case clear = "Clear"
+    case clouds = "Clouds"
+    case snow = "Snow"
+    case rain = "Rain"
+}
+
+// MARK: - WeatherModel
 struct WeatherModel: Codable {
     let lat, lon: Double
     let timezone: String
     let timezoneOffset: Int
     let current: Current
     let hourly: [Current]
-    let daily: [Daily]
+    let daily: [Daily]?
 
     enum CodingKeys: String, CodingKey {
         case lat, lon, timezone
@@ -53,8 +62,8 @@ struct Current: Codable {
 // MARK: - Weather
 struct Weather: Codable {
     let id: Int
-    let main: MainEnum
-    let weatherDescription: Description
+    let main: String?
+    let weatherDescription: String?
     let icon: String
 
     enum CodingKeys: String, CodingKey {
@@ -62,13 +71,6 @@ struct Weather: Codable {
         case weatherDescription = "description"
         case icon
     }
-}
-
-enum MainEnum: String, Codable {
-    case clear = "Clear"
-    case clouds = "Clouds"
-    case snow = "Snow"
-    case rain = "Rain"
 }
 
 enum Description: String, Codable {
@@ -91,7 +93,7 @@ struct Daily: Codable {
     let dewPoint, windSpeed: Double
     let windDeg: Int
     let windGust: Double
-    let weather: [Weather]
+    let weather: [Weather]?
     let clouds: Int
     let pop, uvi: Double
     let snow: Double?
